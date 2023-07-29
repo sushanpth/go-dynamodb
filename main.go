@@ -1,12 +1,38 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"go-dynamodb/infrastructure"
 	"go-dynamodb/initializers"
-	"os"
+
+	"github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
 func main() {
 	initializers.LoadEnvVariables()
-	fmt.Println(os.Getenv("AWS_REGION"))
+
+	// load AWS config and dynamodb client
+	config := infrastructure.NewAWSConfig()
+	client := infrastructure.NewDynamoDBClient(config)
+
+	// get table information
+	table, err := client.DescribeTable(
+		context.TODO(),
+		&dynamodb.DescribeTableInput{
+			TableName: aws.String("Messages"),
+		},
+	)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf(
+		"Table ID: %s \nTable Name: %s\n\n",
+		*table.Table.TableId,
+		*table.Table.TableName,
+	)
+
 }
