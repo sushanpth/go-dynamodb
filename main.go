@@ -31,7 +31,7 @@ func main() {
 
 	fmt.Printf(
 		"Table ID: %s \nTable Name: %s\n\n",
-		*table.Table.TableId,
+		*table.Table.TableId, //as DescribeTable returns a pointer, we need to dereference the values
 		*table.Table.TableName,
 	)
 
