@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"go-dynamodb/infrastructure"
 	"go-dynamodb/initializers"
+	"go-dynamodb/services"
 	"go-dynamodb/utils"
 )
 
@@ -24,6 +25,19 @@ func main() {
 		"Table ID: %s \nTable Name: %s\n\n",
 		*table.Table.TableId, //as DescribeTable returns a pointer, we need to dereference the values
 		*table.Table.TableName,
+	)
+
+	// create chats table
+	chatTable, err := services.CreateChatTable(client)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf(
+		"Table ID: %s \nTable Name: %s\n\n",
+		*chatTable.TableDescription.TableId,
+		*chatTable.TableDescription.TableName,
 	)
 
 }
