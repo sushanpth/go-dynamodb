@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"go-dynamodb/constants"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
@@ -11,7 +12,7 @@ import (
 func CreateChatTable(client *dynamodb.Client) (*dynamodb.CreateTableOutput, error) {
 	// create chats table
 	table, err := client.CreateTable(context.TODO(), &dynamodb.CreateTableInput{
-		TableName: aws.String("Chats"),
+		TableName: aws.String(constants.ChatTable),
 		// primary key attributes are required
 		AttributeDefinitions: []types.AttributeDefinition{{
 			AttributeName: aws.String("user_id"),

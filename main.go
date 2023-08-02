@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"go-dynamodb/constants"
 	"go-dynamodb/infrastructure"
 	"go-dynamodb/initializers"
 	"go-dynamodb/services"
@@ -15,7 +16,7 @@ func main() {
 	config := infrastructure.NewAWSConfig()
 	client := infrastructure.NewDynamoDBClient(config)
 
-	table, err := utils.DescribeTable(client, "Messages")
+	table, err := utils.DescribeTable(client, constants.MessageTable)
 
 	if err != nil {
 		fmt.Println(err)
