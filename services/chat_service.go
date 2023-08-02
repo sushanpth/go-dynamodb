@@ -12,6 +12,7 @@ func CreateChatTable(client *dynamodb.Client) (*dynamodb.CreateTableOutput, erro
 	// create chats table
 	table, err := client.CreateTable(context.TODO(), &dynamodb.CreateTableInput{
 		TableName: aws.String("Chats"),
+		// primary key attributes are required
 		AttributeDefinitions: []types.AttributeDefinition{{
 			AttributeName: aws.String("user_id"),
 			AttributeType: types.ScalarAttributeTypeS,
@@ -19,6 +20,7 @@ func CreateChatTable(client *dynamodb.Client) (*dynamodb.CreateTableOutput, erro
 			AttributeName: aws.String("chat_id"),
 			AttributeType: types.ScalarAttributeTypeS,
 		}},
+		// add primary key details
 		KeySchema: []types.KeySchemaElement{{
 			AttributeName: aws.String("user_id"),
 			KeyType:       types.KeyTypeHash,
@@ -26,6 +28,7 @@ func CreateChatTable(client *dynamodb.Client) (*dynamodb.CreateTableOutput, erro
 			AttributeName: aws.String("chat_id"),
 			KeyType:       types.KeyTypeRange,
 		}},
+		// set billing mode
 		BillingMode: types.BillingModePayPerRequest,
 	})
 
