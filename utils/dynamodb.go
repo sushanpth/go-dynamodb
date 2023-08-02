@@ -2,16 +2,12 @@ package utils
 
 import (
 	"context"
-	"go-dynamodb/infrastructure"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 )
 
-func DescribeTable(tableName string) (*dynamodb.DescribeTableOutput, error) {
-	// load AWS config and dynamodb client
-	config := infrastructure.NewAWSConfig()
-	client := infrastructure.NewDynamoDBClient(config)
+func DescribeTable(client *dynamodb.Client, tableName string) (*dynamodb.DescribeTableOutput, error) {
 
 	// get table information
 	table, err := client.DescribeTable(
