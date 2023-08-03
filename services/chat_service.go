@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
+	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/expression"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 )
@@ -65,4 +66,83 @@ func Create(
 		fmt.Printf("Couldn't add item to table.: %v\n", err)
 	}
 	return output, err
+}
+
+func GetUserChats(
+	client *dynamodb.Client,
+	userID string,
+) (*[]ChatDataType, error) {
+
+	// initialize variable
+	var chats []ChatDataType
+
+	// prepare query expression
+	keyExpression := expression.Key("user_id").Equal(expression.Value(userID))
+	// build expression
+	expr, err := expression.NewBuilder().WithKeyCondition(keyExpression).Build()
+
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.Query(
+		context.TODO(),
+		&dynamodb.QueryInput{
+			TableName:                 aws.String(constants.ChatTable),
+			ExpressionAttributeNames:  expr.Names(),
+			ExpressionAttributeValues: expr.Values(),
+			KeyConditionExpression:    expr.KeyCondition(),
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// unmarshal attribute values to go struct
+	err = attributevalue.UnmarshalListOfMaps(response.Items, &chats)
+
+	return &chats, err
+}
+
+func GetSingleChat(
+	client *dynamodb.Client,
+	userID, chatID string,
+) (*ChatDataType, error) {
+
+	// initialize variable
+	var chat ChatDataType
+
+	//serialize go value type into attribute value type
+	userKey, err := attributevalue.Marshal(userID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// convert go type to attribute value type
+	chatKey, err := attributevalue.Marshal(chatID)
+
+	if err != nil {
+		return nil, err
+	}
+
+	// run GetItem
+	response, err := client.GetItem(
+		context.TODO(),
+		&dynamodb.GetItemInput{
+			TableName: aws.String(constants.ChatTable),
+			Key: map[string]types.AttributeValue{
+				"user_id": userKey,
+				"chat_id": chatKey,
+			},
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+
+	// unmarshal attribute values to go struct
+	err = attributevalue.UnmarshalMap(response.Item, &chat)
+
+	return &chat, err
 }
