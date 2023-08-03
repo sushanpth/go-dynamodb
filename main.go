@@ -7,6 +7,9 @@ import (
 	"go-dynamodb/initializers"
 	"go-dynamodb/services"
 	"go-dynamodb/utils"
+	"time"
+
+	"github.com/google/uuid"
 )
 
 func main() {
@@ -29,16 +32,33 @@ func main() {
 	)
 
 	// create chats table
-	chatTable, err := services.CreateChatTable(client)
+	// chatTable, err := services.CreateChatTable(client)
+
+	// if err != nil {
+	// 	fmt.Println(err)
+	// }
+
+	// fmt.Printf(
+	// 	"Table ID: %s \nTable Name: %s\n\n",
+	// 	*chatTable.TableDescription.TableId,
+	// 	*chatTable.TableDescription.TableName,
+	// )
+
+	// add item to chart table
+	ChatID := uuid.New()
+	chatData := services.ChatDataType{
+		UserID:    "dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
+		ChatID:    ChatID.String(),
+		Title:     "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
+		CreatedAt: time.Now(),
+	}
+
+	_, err = services.Create(client, chatData)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Printf(
-		"Table ID: %s \nTable Name: %s\n\n",
-		*chatTable.TableDescription.TableId,
-		*chatTable.TableDescription.TableName,
-	)
+	fmt.Println("New Chat Created.")
 
 }
