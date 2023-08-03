@@ -76,7 +76,7 @@ func main() {
 
 	updatedFields, err := services.UpdateChat(client, services.ChatDataType{
 		UserID: "dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
-		ChatID: "fb075ee7-f119-4a69-ac1f-0642c0441ca8",
+		ChatID: "0955f724-e2fb-4787-8298-bcab5a159f0c",
 		Title:  "The far away mountain loomed in the distance, its peak shrouded in mist and mystery.",
 	})
 
@@ -90,7 +90,7 @@ func main() {
 	chat, err := services.GetSingleChat(
 		client,
 		"dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
-		"fb075ee7-f119-4a69-ac1f-0642c0441ca8",
+		"0955f724-e2fb-4787-8298-bcab5a159f0c",
 	)
 
 	if err != nil {
@@ -103,4 +103,15 @@ func main() {
 		chat.ChatID,
 		chat.Title,
 	)
+
+	// delete chat
+	err = services.DeleteChat(
+		client,
+		"dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
+		"fb075ee7-f119-4a69-ac1f-0642c0441ca8",
+	)
+
+	if err != nil {
+		fmt.Println(err)
+	}
 }

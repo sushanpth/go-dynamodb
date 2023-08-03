@@ -200,3 +200,28 @@ func UpdateChat(client *dynamodb.Client, chat ChatDataType) (*dynamodb.UpdateIte
 	}
 	return response, err
 }
+
+func DeleteChat(client *dynamodb.Client, userID, chatID string) error {
+	// marshal key to attribute value type
+	userKey, err := attributevalue.Marshal(userID)
+	if err != nil {
+		return err
+	}
+	chatKey, err := attributevalue.Marshal(chatID)
+	if err != nil {
+		return err
+	}
+
+	// set chat key
+	deleteKey := map[string]types.AttributeValue{
+		"user_id": userKey,
+		"chat_id": chatKey,
+	}
+
+	_, err = client.DeleteItem(context.TODO(), &dynamodb.DeleteItemInput{
+		TableName: aws.String(constants.ChatTable),
+		Key:       deleteKey,
+	})
+
+	return err
+}
