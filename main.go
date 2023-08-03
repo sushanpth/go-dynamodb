@@ -47,7 +47,7 @@ func main() {
 	// 	UserID:    "dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
 	// 	ChatID:    ChatID.String(),
 	// 	Title:     "Far far away, behind the word mountains, far from the countries Vokalia and Consonantia, there live the blind texts.",
-	// 	CreatedAt: time.Now(),
+	// 	CreatedAt: time.Now().Unix(),
 	// }
 
 	// _, err = services.Create(client, chatData)
@@ -73,6 +73,18 @@ func main() {
 			chat.Title,
 		)
 	}
+
+	updatedFields, err := services.UpdateChat(client, services.ChatDataType{
+		UserID: "dbebf8e1-a375-4f9b-af6d-41f057e7b49b",
+		ChatID: "fb075ee7-f119-4a69-ac1f-0642c0441ca8",
+		Title:  "The far away mountain loomed in the distance, its peak shrouded in mist and mystery.",
+	})
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	fmt.Printf("Updated %s \n\n", updatedFields.Attributes["chat_id"])
 
 	// get single chat item
 	chat, err := services.GetSingleChat(

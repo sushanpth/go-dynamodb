@@ -14,10 +14,11 @@ import (
 )
 
 type ChatDataType struct {
-	ChatID    string    `json:"chat_id" dynamodbav:"chat_id"`
-	UserID    string    `json:"user_id" dynamodbav:"user_id"`
-	Title     string    `json:"title" dynamodbav:"title"`
-	CreatedAt time.Time `json:"created_at" dynamodbav:"created_at"`
+	ChatID    string `json:"chat_id" dynamodbav:"chat_id"`
+	UserID    string `json:"user_id" dynamodbav:"user_id"`
+	Title     string `json:"title" dynamodbav:"title"`
+	CreatedAt int    `json:"created_at" dynamodbav:"created_at"`
+	UpdatedAt int    `json:"updated_at" dynamodbav:"updated_at"`
 }
 
 func CreateChatTable(client *dynamodb.Client) (*dynamodb.CreateTableOutput, error) {
@@ -145,4 +146,57 @@ func GetSingleChat(
 	err = attributevalue.UnmarshalMap(response.Item, &chat)
 
 	return &chat, err
+}
+
+func UpdateChat(client *dynamodb.Client, chat ChatDataType) (*dynamodb.UpdateItemOutput, error) {
+
+	// marshal key to attribute value type
+	userKey, err := attributevalue.Marshal(chat.UserID)
+	if err != nil {
+		return nil, err
+	}
+	chatKey, err := attributevalue.Marshal(chat.ChatID)
+	if err != nil {
+		return nil, err
+	}
+
+	// set chat key
+	updateKey := map[string]types.AttributeValue{
+		"user_id": userKey,
+		"chat_id": chatKey,
+	}
+
+	// update title expression
+	updateExp := expression.Set(
+		expression.Name("title"),
+		expression.Value(chat.Title),
+	)
+
+	// set updated_at to current timestamp
+	updateExp.Set(
+		expression.Name("updated_at"),
+		expression.Value(time.Now().Unix()),
+	)
+
+	// build expression for update
+	expr, err := expression.NewBuilder().WithUpdate(updateExp).Build()
+	if err != nil {
+		return nil, err
+	}
+
+	response, err := client.UpdateItem(
+		context.TODO(),
+		&dynamodb.UpdateItemInput{
+			TableName:                 aws.String(constants.ChatTable),
+			Key:                       updateKey,
+			UpdateExpression:          expr.Update(),
+			ExpressionAttributeNames:  expr.Names(),
+			ExpressionAttributeValues: expr.Values(),
+			ReturnValues:              types.ReturnValueAllNew,
+		},
+	)
+	if err != nil {
+		return nil, err
+	}
+	return response, err
 }
