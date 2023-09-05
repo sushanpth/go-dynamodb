@@ -1,4 +1,4 @@
 package constants
 
-var ChatTable = "Chats"
-var MessageTable = "Messages"
+const ChatTable = "Chats"
+const MessageTable = "Messages"
